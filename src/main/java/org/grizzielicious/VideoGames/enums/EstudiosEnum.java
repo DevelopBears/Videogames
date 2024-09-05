@@ -1,0 +1,21 @@
+package org.grizzielicious.VideoGames.enums;
+
+public enum EstudiosEnum {
+    BLIZZARD,
+    ELECTRONIC_ARTS,
+    NINTENDO,
+    SANTA_MONICA_STUDIO,
+    DENTON_DESIGNS,
+    UBISOFT,
+    EPIC_GAMES,
+    TELLTALE_GAMES,
+    THATGAMECOMPANY,
+    BIOWARE,
+    NAUGHTY_DOG,
+    ROCKSTAR_NORTH,
+    PUBG_CORPORATION,
+
+    ROCKSTAR_GAMES,
+    MOJANG_STUDIOS,
+    INFINITY_WARD
+}
