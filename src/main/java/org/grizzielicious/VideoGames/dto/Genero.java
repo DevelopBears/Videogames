@@ -1,8 +1,8 @@
 package org.grizzielicious.VideoGames.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
-
-import static org.grizzielicious.VideoGames.constants.ValidationsConstants.CANNOT_BE_NULL_OR_EMPTY;
 
 @Entity
 @Data
@@ -28,13 +26,15 @@ public class Genero implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_genero")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int idGenero;
 
     //todo añadir las validaciones
     @Column(name = "descripcion")
     private String descripcion;
 
-//    @Column(name = "is_active")
-//    private boolean isActive;
+    @Column(name = "is_active")
+    @JsonIgnore
+    private boolean estaActivo = true;
 
 }

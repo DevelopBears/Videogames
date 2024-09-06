@@ -17,12 +17,12 @@ public class GeneroServiceImpl implements GeneroService{
 
     @Override
     public List<Genero> listarTodosLosGeneros() {
-        return generoRepository.findAllByOrderByDescripcion();
+        return generoRepository.findAllByEstaActivoIsTrueOrderByDescripcion();
     }
 
     @Override
     public Optional<Genero> encontrarGeneroPorId(int genero) {
-        return generoRepository.findByIdGenero(genero);
+        return generoRepository.findById(genero);
     }
 
     @Override
@@ -33,11 +33,5 @@ public class GeneroServiceImpl implements GeneroService{
     @Override
     public int guardaGenero(Genero genero) {
         return generoRepository.save(genero).getIdGenero();
-    }
-
-    @Override
-    public void eliminaGenero(Genero genero) {
-        generoRepository.delete(genero);
-
     }
 }
