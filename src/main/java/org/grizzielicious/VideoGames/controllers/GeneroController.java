@@ -85,7 +85,7 @@ public class GeneroController {
             detail = "Se actualizó el género de manera correcta";
             status = HttpStatus.OK;
         } catch (Exception e) {
-            detail = "Ocurrió una excepción al actualizar el género" + e.getMessage();
+            detail = "Ocurrió una excepción al actualizar el género: " + e.getMessage();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         log.info("Termina el proceso de actualización de género");
@@ -105,7 +105,7 @@ public class GeneroController {
             detail = "Se borró el género de manera correcta";
             status = HttpStatus.OK;
         } catch (Exception e) {
-            detail = "Ocurrió una excepción al actualizar el género"  + e.getMessage();
+            detail = "Ocurrió una excepción al actualizar el género: "  + e.getMessage();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         log.info("Termina el proceso de borrado de género");
