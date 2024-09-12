@@ -1,5 +1,6 @@
 package org.grizzielicious.VideoGames.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class Plataforma implements Serializable {
     @Column(name = "nombre_plataforma")
     private String plataforma;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "plataformas")
     private List<Videojuego> videojuegos;
 

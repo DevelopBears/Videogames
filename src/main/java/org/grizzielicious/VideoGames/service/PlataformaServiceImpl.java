@@ -14,21 +14,40 @@ import java.util.Optional;
 public class PlataformaServiceImpl implements PlataformaService{
 
     @Autowired
-    private PlataformaDao plataformaDao;
-
+    private PlataformaDao repository;
 
     @Override
     public List<Plataforma> listarTodasLasPlataformas() {
-        return List.of();
+        return repository.findAllByOrderByPlataforma();
     }
 
     @Override
-    public Optional<Plataforma> encontrarPlataformaPorId(Plataforma plataforma) {
-        return plataformaDao.findByIdPlataforma(plataforma.getIdPlataforma());
+    public Optional<Plataforma> encontrarPlataformaPorId(int idPlataforma) {
+        return repository.findByIdPlataforma(idPlataforma);
     }
 
     @Override
     public Optional<Plataforma> encontrarPlataformaPorNombre(String plataforma) {
-        return plataformaDao.findByPlataforma(plataforma);
+        return repository.findByPlataforma(plataforma);
+    }
+
+    @Override
+    public List<Plataforma> encontrarPlataformaPorNombreLike(String plataforma) {
+        return repository.findByPlataformaContains(plataforma);
+    }
+
+    @Override
+    public List<Plataforma> encontrarPlataformaPorVideojuego(int idVideojuego) {
+        return repository.findByVideogameAvailability(idVideojuego);
+    }
+
+    @Override
+    public int guardarPlataforma(Plataforma plataforma) {
+        return repository.saveAndFlush(plataforma).getIdPlataforma();
+    }
+
+    @Override
+    public void eliminarPlataforma(int idPlataforma) {
+        repository.deleteById(idPlataforma);
     }
 }
