@@ -7,6 +7,10 @@ import java.util.Optional;
 
 public interface PlataformaService {
     public List<Plataforma> listarTodasLasPlataformas();
-    public Optional<Plataforma> encontrarPlataformaPorId(Plataforma plataforma);
+    public Optional<Plataforma> encontrarPlataformaPorId(int idPlataforma);
     public Optional<Plataforma> encontrarPlataformaPorNombre(String plataforma);
+    public List<Plataforma> encontrarPlataformaPorNombreLike (String plataforma);
+    public List<Plataforma> encontrarPlataformaPorVideojuego (int idVideojuego);
+    public int guardarPlataforma (Plataforma plataforma);
+    public void eliminarPlataforma(int idPlataforma);
 }

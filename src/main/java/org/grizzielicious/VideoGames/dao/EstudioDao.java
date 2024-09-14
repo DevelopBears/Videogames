@@ -15,4 +15,5 @@ public interface EstudioDao extends JpaRepository<Estudio, Integer> {
     List<Estudio> findEstudioByEstudioLike(@Param("nombreEstudio") String nombreEstudio);
 
     List<Estudio> findAllByOrderByEstudio ();
+
 }
