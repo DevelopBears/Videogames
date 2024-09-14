@@ -16,7 +16,7 @@ public interface PlataformaDao extends JpaRepository<Plataforma, Integer> {
 
     Optional<Plataforma> findByPlataforma(@Param("plataforma") String Plataforma);
 
-    List<Plataforma> findByPlataformaContains(String Plataforma); //THE Jr has beaten up a Sr!!! Ü
+    List<Plataforma> findByPlataformaContains(String Plataforma);
 
     List<Plataforma> findAllByOrderByPlataforma();
 

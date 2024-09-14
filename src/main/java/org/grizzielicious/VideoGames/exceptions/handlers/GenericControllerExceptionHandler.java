@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice(assignableTypes = {GeneroController.class, PlataformaController.class})
-@Order(Ordered.HIGHEST_PRECEDENCE) //TODO investigar
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GenericControllerExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, NumberFormatException.class})
