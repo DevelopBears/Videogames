@@ -20,7 +20,8 @@ import java.io.Serializable;
 @Table(name="estudio")
 public class Estudio implements Serializable {
 
-    @Serial
+
+    @Serial //TODO preguntar si es necesario dado que marca warn si no se tiene
     private static final long serialVersionUID = 1L;
 
     //todo añadir las validaciones

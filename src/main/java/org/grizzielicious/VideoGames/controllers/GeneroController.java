@@ -3,15 +3,22 @@ package org.grizzielicious.VideoGames.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.dto.Genero;
+import org.grizzielicious.VideoGames.exceptions.GeneroAlreadyExistsException;
+import org.grizzielicious.VideoGames.exceptions.GeneroNotFoundException;
+import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
 import org.grizzielicious.VideoGames.service.GeneroService;
+import org.grizzielicious.VideoGames.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -53,33 +60,40 @@ public class GeneroController {
     }
 
     @PostMapping("/crearGenero")
-    private ResponseEntity<?> crearGenero(@RequestBody Genero genero) {
+    private ResponseEntity<?> crearGenero(@Valid @RequestBody Genero genero, Errors errores)
+            throws InvalidParameterException, GeneroAlreadyExistsException {
         log.info("Comenzando a crear un género");
         HttpStatus status;
         String detail;
+        if(errores.hasErrors()) {
+            throw new InvalidParameterException("El género no cumple cono las validaciones: " +
+                    ErrorUtils.errorsToStringSet(errores));
+        }
+        validarInexistenciaDeGenero(genero);
         try {
-            validarInexistenciaDeGenero(genero);
             int id = service.guardaGenero(genero);
             detail = "Se creó un nuevo género en la BD con el id = " + id;
             status = HttpStatus.OK;
         } catch (Exception e) {
             detail = "Ocurrió un error al crear un nuevo género: " + e.getMessage();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            log.error(detail);
+            log.error(detail,e);
         }
         log.info("Finaliza proceso de creación de género");
         return new ResponseEntity<>(detail, status);
     }
 
     @PutMapping("/actualizarGenero/{id}")
-    private ResponseEntity<?> actualizarGenero(@PathVariable int id, @RequestParam String newDescripcion){
+    private ResponseEntity<?> actualizarGenero(@PathVariable int id, @RequestParam String newDescripcion)
+            throws InvalidParameterException, GeneroAlreadyExistsException, GeneroNotFoundException {
         log.info("Iniciando el proceso de actualización de género");
         HttpStatus status;
         Genero aActulizar;
         String detail;
+        ErrorUtils.validateString25(newDescripcion, "descripcionGenero");
+        aActulizar = validarExistenciaDeGenero(id);
+        validarInexistenciaDeGenero(newDescripcion);
         try {
-            aActulizar = validarExistenciaDeGenero(id);
-            validarInexistenciaDeGenero(newDescripcion);
             aActulizar.setDescripcion(newDescripcion);
             service.guardaGenero(aActulizar);
             detail = "Se actualizó el género de manera correcta";
@@ -93,13 +107,13 @@ public class GeneroController {
     }
 
     @DeleteMapping("/borrarGenero/{id}")
-    private ResponseEntity<?> borrarGenero(@PathVariable int id){
+    private ResponseEntity<?> borrarGenero(@PathVariable int id) throws GeneroNotFoundException {
         log.info("Iniciando el proceso de borrado de género");
         HttpStatus status;
         Genero aActulizar;
         String detail;
+        aActulizar = validarExistenciaDeGenero(id);
         try {
-            aActulizar = validarExistenciaDeGenero(id);
             aActulizar.setEstaActivo(false);
             service.guardaGenero(aActulizar);
             detail = "Se borró el género de manera correcta";
@@ -113,29 +127,29 @@ public class GeneroController {
 
     }
 
-    public void validarInexistenciaDeGenero(Genero aValidar) throws Exception {
+    public void validarInexistenciaDeGenero(Genero aValidar) throws GeneroAlreadyExistsException {
         int id = service.encontrarGeneroPorDescripcion(aValidar.getDescripcion())
                 .orElse(Genero.builder().idGenero(-1).build())
                 .getIdGenero();
         if(id > 0) {
-            throw new Exception("El género <" + aValidar.getDescripcion() + "> ya se encuentra en la base de datos");
+            throw new GeneroAlreadyExistsException("El género <" + aValidar.getDescripcion() + "> ya se encuentra en la base de datos");
         }
     }
 
-    public void validarInexistenciaDeGenero(String descripcion) throws Exception {
+    public void validarInexistenciaDeGenero(String descripcion) throws GeneroAlreadyExistsException {
         int id = service.encontrarGeneroPorDescripcion(descripcion)
                 .orElse(Genero.builder().idGenero(-1).build())
                 .getIdGenero();
         if(id > 0) {
-            throw new Exception("El género <" + descripcion + "> ya se encuentra en la base de datos");
+            throw new GeneroAlreadyExistsException("El género <" + descripcion + "> ya se encuentra en la base de datos");
         }
     }
 
-    public Genero validarExistenciaDeGenero(int idBuscado) throws Exception {
+    public Genero validarExistenciaDeGenero(int idBuscado) throws GeneroNotFoundException {
         Genero genero = service.encontrarGeneroPorId(idBuscado)
                 .orElse(Genero.builder().idGenero(-1).build());
         if(genero.getIdGenero() < 0) {
-            throw new Exception("El género <" + idBuscado + "> no existe en la base de datos");
+            throw new GeneroNotFoundException("El género <" + idBuscado + "> no existe en la base de datos");
         }
         return genero;
     }
