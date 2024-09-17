@@ -1,6 +1,6 @@
 package org.grizzielicious.VideoGames.dao;
 
-import org.grizzielicious.VideoGames.dto.Videojuego;
+import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,5 +28,11 @@ public interface VideojuegoDao extends JpaRepository<Videojuego, Integer> {
             "INNER JOIN genero g ON g.id_genero = v.id_genero "+
             "WHERE g.descripcion = :nombreGenero", nativeQuery = true)
     List<Videojuego> findVideojuegosByGenero(@Param("nombreGenero") String nombreGenero);
+
+    @Query(value = "SELECT v.* FROM videojuego v " +
+            "INNER JOIN estudio e ON e.id_estudio = v.id_estudio " +
+            "WHERE e.id_estudio = :idEstudio", nativeQuery = true)
+    List<Videojuego> findVideojuegosByEstudio(int idEstudio);
+
 
 }

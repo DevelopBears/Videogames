@@ -1,5 +1,6 @@
 package org.grizzielicious.VideoGames.exceptions.handlers;
 
+import org.grizzielicious.VideoGames.controllers.EstudioController;
 import org.grizzielicious.VideoGames.controllers.GeneroController;
 import org.grizzielicious.VideoGames.controllers.PlataformaController;
 import org.grizzielicious.VideoGames.exceptions.*;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-@ControllerAdvice(assignableTypes = {GeneroController.class, PlataformaController.class})
+@ControllerAdvice(assignableTypes = {GeneroController.class, PlataformaController.class, EstudioController.class})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GenericControllerExceptionHandler {
 
@@ -25,7 +26,8 @@ public class GenericControllerExceptionHandler {
 
     @ExceptionHandler({
             GeneroNotFoundException.class, GeneroAlreadyExistsException.class,
-            PlataformaNotFoundException.class, PlataformaAlreadyExistsException.class
+            PlataformaNotFoundException.class, PlataformaAlreadyExistsException.class,
+            EstudioNotFoundException.class, EstudioAlreadyExistsException.class
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
