@@ -11,21 +11,43 @@ import java.util.Optional;
 @Service
 public class EstudioServiceImpl implements EstudioService{
     @Autowired
-    private EstudioDao estudioDao;
+    private EstudioDao repository;
 
 
     @Override
     public List<Estudio> listarTodosLosEstudios() {
-        return (List<Estudio>) estudioDao.findAll();
+        return repository.findAllByOrderByEstudio();
     }
 
     @Override
-    public Estudio encontrarEstudio(Estudio estudio) {
-        return estudioDao.findById(estudio.getIdEstudio()).orElse(null);
+    public Optional<Estudio> encontrarEstudioPorId(int idEstudio) {
+        return repository.findById(idEstudio);
     }
 
     @Override
-    public Optional<Estudio> encontrarEstudioPorNombre(String nombre) {
-        return estudioDao.findEstudioByEstudio(nombre);
+    public Optional<Estudio> encontrarEstudioPorNombre(String nombreEstudio) {
+        return repository.findEstudioByEstudio(nombreEstudio);
     }
+
+    @Override
+    public List<Estudio> encontrarEstudioPorNombreLike(String nombreEstudio) {
+        return repository.findAllByEstudioContains(nombreEstudio);
+    }
+
+    @Override
+    public List<Estudio> encontrarVideojuegoPorEstudio(String nombreEstudio) {
+        return repository.findByDeveloperEstudio(nombreEstudio);
+    }
+
+    @Override
+    public int guardarEstudio(Estudio estudio) {
+        return repository.saveAndFlush(estudio).getIdEstudio();
+    }
+
+    @Override
+    public void eliminarEstudio(int idEstudio) {
+        repository.deleteById(idEstudio);
+    }
+
+
 }

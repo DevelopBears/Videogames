@@ -9,11 +9,24 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EstudioDao extends JpaRepository<Estudio, Integer> {
-    Optional<Estudio> findEstudioByEstudio(@Param("nombreEstudio") String nombreEstudio);
-
-    //@Query(value = "SELECT e.* FROM estudio e WHERE e.nombre_estudio LIKE %:nombreEstudio%", nativeQuery = true)
-    List<Estudio> findEstudioByEstudioLike(@Param("nombreEstudio") String nombreEstudio);
 
     List<Estudio> findAllByOrderByEstudio ();
 
+    Optional<Estudio> findEstudioByEstudio (String nombreEstudio);
+
+    List<Estudio> findAllByEstudioContains (String nombreEstudio);
+
+    @Query(value = "SELECT v.* FROM videojuego v\n" +
+            "INNER JOIN estudio e ON e.id_estudio = v.id_estudio\n" +
+            "WHERE e.id_estudio = :nombreEstudio", nativeQuery = true )
+    List<Estudio> findByDeveloperEstudio (String nombreEstudio);
 }
+
+
+//
+//Añadir nuevas estudios
+//Consultar todos los estudios OK
+//Consultar estudio por nombre OK
+//Consultar estudio por nombre like OK
+//Consultar todos los videojuegos que ha desarrollado un estudio OK
+//Eliminar estudio por id
