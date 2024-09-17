@@ -125,14 +125,8 @@ public class EstudioController {
     }
 
     public Estudio validarExistenciaEstudio (int idEstudio) throws EstudioNotFoundException {
-        Estudio estudio = service.encontrarPorId(idEstudio)
-                .orElse(Estudio.builder()
-                        .idEstudio(-1)
-                        .build());
-        if(estudio.getIdEstudio() < 0) {
-            throw new EstudioNotFoundException("El estudio con ID " + idEstudio + " no se encuentra en la BD");
-        }
-        return estudio;
+        return service.encontrarPorId(idEstudio)
+                .orElseThrow(() -> new EstudioNotFoundException("El estudio con ID " + idEstudio + " no se encuentra en la BD"));
     }
 
 }
