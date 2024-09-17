@@ -1,6 +1,6 @@
 package org.grizzielicious.VideoGames.dao;
 
-import org.grizzielicious.VideoGames.dto.Genero;
+import org.grizzielicious.VideoGames.entities.Genero;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 

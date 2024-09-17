@@ -1,4 +1,4 @@
-package org.grizzielicious.VideoGames.dto;
+package org.grizzielicious.VideoGames.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;

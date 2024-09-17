@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.grizzielicious.VideoGames.dto.Genero;
+import org.grizzielicious.VideoGames.entities.Genero;
 import org.grizzielicious.VideoGames.exceptions.GeneroAlreadyExistsException;
 import org.grizzielicious.VideoGames.exceptions.GeneroNotFoundException;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
@@ -65,7 +65,7 @@ public class GeneroController {
         HttpStatus status;
         String detail;
         if(errores.hasErrors()) {
-            throw new InvalidParameterException("El género no cumple cono las validaciones: " +
+            throw new InvalidParameterException("El género no cumple con las validaciones: " +
                     ErrorUtils.errorsToStringSet(errores));
         }
         validarInexistenciaDeGenero(genero);

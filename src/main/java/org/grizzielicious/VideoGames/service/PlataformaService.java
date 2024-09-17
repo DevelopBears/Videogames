@@ -1,6 +1,6 @@
 package org.grizzielicious.VideoGames.service;
 
-import org.grizzielicious.VideoGames.dto.Plataforma;
+import org.grizzielicious.VideoGames.entities.Plataforma;
 
 import java.util.List;
 import java.util.Optional;

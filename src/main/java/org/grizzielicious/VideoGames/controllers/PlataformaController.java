@@ -2,7 +2,7 @@ package org.grizzielicious.VideoGames.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.grizzielicious.VideoGames.dto.Plataforma;
+import org.grizzielicious.VideoGames.entities.Plataforma;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
 import org.grizzielicious.VideoGames.exceptions.PlataformaAlreadyExistsException;
 import org.grizzielicious.VideoGames.exceptions.PlataformaNotFoundException;

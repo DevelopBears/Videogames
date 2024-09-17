@@ -1,7 +1,7 @@
 package org.grizzielicious.VideoGames.service;
 
 import org.grizzielicious.VideoGames.dao.GeneroDao;
-import org.grizzielicious.VideoGames.dto.Genero;
+import org.grizzielicious.VideoGames.entities.Genero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
