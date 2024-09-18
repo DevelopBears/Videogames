@@ -57,7 +57,7 @@ public class EstudioServiceImpl implements EstudioService{
             response = VideojuegosPorEstudioResponse
                     .builder()
                     .nombreEstudio(videojuegos.get(0).getEstudioDesarrollador().getEstudio())
-                    .videojuegos(videojuegoConverter.convertFromEntities(videojuegos))
+                    .videojuegos(videojuegoConverter.convertFromEntityList(videojuegos))
                     .build();
         }
         return response;

@@ -7,4 +7,5 @@ public class ValidationsConstants {
     public static final String LENGTH_NOT_VALID25 = LENGTH_NOT_VALID + " [3-25]";
     public static final String LENGTH_NOT_VALID50 = LENGTH_NOT_VALID + " [3-50]";
     public static final String VALUE_NOT_RECOGNIZED = " El valor ingresado no se reconoce como parte del catálogo";
+    public static final String PRICE_OUT_OF_RANGE = "El precio debe de estar comprendido en el intervalo de $0 a $8,000";
 }

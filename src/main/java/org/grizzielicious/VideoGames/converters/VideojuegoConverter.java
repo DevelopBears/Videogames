@@ -6,16 +6,11 @@ import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.grizzielicious.VideoGames.exceptions.NotImplementedException;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class VideojuegoConverter {
+public class VideojuegoConverter implements iConverter<VideojuegoDTO, Videojuego> {
     public Videojuego convertFromDto(VideojuegoDTO dto) throws NotImplementedException {
-        throw new NotImplementedException("Esta funcionalidad aún no está implementada");
-    }
-
-    public List<Videojuego> convertFromDtos (List<VideojuegoDTO> listDto) throws NotImplementedException {
         throw new NotImplementedException("Esta funcionalidad aún no está implementada");
     }
 
@@ -28,12 +23,6 @@ public class VideojuegoConverter {
                         .collect(Collectors.joining(", "))
                 )
                 .build();
-    }
-
-    public List<VideojuegoDTO> convertFromEntities(List<Videojuego> listEntity) {
-        return listEntity.stream()
-                .map(this::convertFromEntity)
-                .toList();
     }
 }
 
