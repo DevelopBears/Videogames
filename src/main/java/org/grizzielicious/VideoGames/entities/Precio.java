@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,19 +33,18 @@ public class Precio implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @NotEmpty(message = "idPrecio" + CANNOT_BE_NULL_OR_EMPTY)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "id_precio")
     private int idPrecio;
 
-    @NotEmpty(message = "precioUnitario" + CANNOT_BE_NULL_OR_EMPTY)
+    @NotNull(message = "precioUnitario" + CANNOT_BE_NULL_OR_EMPTY)
     @Range(min = 0, max = 8000, message = PRICE_OUT_OF_RANGE)
     @Column(name = "precio_unitario", columnDefinition = "DECIMAL(8,2)")
     private float precioUnitario;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GTM-6")
-    @NotEmpty(message = "fechaInicioVigencia" + CANNOT_BE_NULL_OR_EMPTY)
+    @NotNull(message = "fechaInicioVigencia" + CANNOT_BE_NULL_OR_EMPTY)
     @Column(name = "fecha_inicio_vigencia")
     private LocalDateTime fechaInicioVigencia;
 
@@ -54,7 +54,6 @@ public class Precio implements Serializable {
     private LocalDateTime fechaFinVigencia;
 
     @ManyToOne
-    @NotEmpty(message = "idVideojuego" + CANNOT_BE_NULL_OR_EMPTY)
     @JoinColumn(name = "id_videojuego")
     private Videojuego videojuego;
 

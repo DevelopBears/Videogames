@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.converters.PrecioConverter;
 import org.grizzielicious.VideoGames.dtos.PrecioDto;
 import org.grizzielicious.VideoGames.entities.Precio;
+import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
+import org.grizzielicious.VideoGames.exceptions.PrecioAlreadyExistsException;
+import org.grizzielicious.VideoGames.exceptions.PrecioNotFoundException;
+import org.grizzielicious.VideoGames.exceptions.VideojuegoNotFoundException;
 import org.grizzielicious.VideoGames.service.PrecioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +39,7 @@ public class PrecioBO {
     }
 
     public PrecioDto getEncontrarVideojuegoPorFecha (LocalDateTime fecha, int idVideojuego) {
-        Precio precio = service.listarPreciosPorFechaVideojuego(fecha, idVideojuego).orElse(null);
+        Precio precio = service.encontrarPrecioPorFechaVideojuego(fecha, idVideojuego).orElse(null);
         return (Objects.isNull(precio)) ? null : precioConverter.convertFromEntity(precio);
     }
 
@@ -48,4 +52,48 @@ public class PrecioBO {
         Precio precio = service.encontrarPrecioActivoParaVideojuego(idVideojuego).orElse(null);
         return (Objects.isNull(precio) ? null : precioConverter.convertFromEntity(precio));
     }
+
+    public int crearPrecio (PrecioDto precioDto) throws PrecioAlreadyExistsException, VideojuegoNotFoundException,
+            InvalidParameterException {
+        int idGuardado = 0;
+        Precio precio = precioConverter.convertFromDto(precioDto);
+        Precio anterior = service.encontrarPrecioPorFechaVideojuego(precio.getFechaInicioVigencia(),
+                precio.getVideojuego().getIdVideojuego()).orElse(null);
+        if(Objects.isNull(anterior)) {
+            idGuardado = service.guardarPrecio(precio);
+        } else if (Objects.isNull(anterior.getFechaFinVigencia() )
+            && precio.getFechaInicioVigencia().minusSeconds(1).isAfter(anterior.getFechaInicioVigencia()))  {
+            anterior.setFechaFinVigencia(precio.getFechaInicioVigencia().minusSeconds(1));
+            service.guardarPrecio(anterior);
+            idGuardado = service.guardarPrecio(precio);
+        } else {
+            throw new PrecioAlreadyExistsException(
+                    "Ya existe un precio cuya vigencia se traslapa con la solicitada. ver precio con id <"
+                            + anterior.getIdPrecio() + ">");
+        }
+        return idGuardado;
+
+    }
+
+    public void actualizarPrecio (int id, Float precioUnitario, LocalDateTime inicioVigencia, LocalDateTime finVigencia,
+                                  Boolean setFinVigenciaAsNull) throws PrecioNotFoundException, InvalidParameterException {
+        Precio precio = service.encontrarPorId(id)
+                .orElseThrow(() -> new PrecioNotFoundException("No existe el precio con el ID <" + id + ">"));
+        if (Objects.nonNull(precioUnitario)) {
+            precio.setPrecioUnitario(precioUnitario);
+        }
+        if(Objects.nonNull(inicioVigencia)) {
+            precio.setFechaInicioVigencia(inicioVigencia);
+        }
+        if(Objects.nonNull(finVigencia)) {
+            precio.setFechaFinVigencia(finVigencia);
+        }
+        if (Objects.nonNull(setFinVigenciaAsNull) && setFinVigenciaAsNull) {
+            precio.setFechaFinVigencia(null);
+        }
+        service.guardarPrecio(precio);
+    }
+
+
+
 }
