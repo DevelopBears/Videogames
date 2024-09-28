@@ -65,13 +65,13 @@ public class Precio implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime fechaUltimaMod;
 
-    @PrePersist //lanza evento antes de realizar una inserción
+    @PrePersist
     private void validateDates() {
         this.fechaCreacion = LocalDateTime.now();
         this.fechaUltimaMod = LocalDateTime.now();
     }
 
-    @PreUpdate //lanza evento antes de realizar un update
+    @PreUpdate
     private void validateUpdateDate() {
         this.fechaUltimaMod = LocalDateTime.now();
     }

@@ -37,10 +37,10 @@ public class PrecioDto implements Serializable {
     private VideojuegoDTO videojuego;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GTM-6")
-    //@NotNull(message = "fechaInicioVigencia" + CANNOT_BE_NULL_OR_EMPTY)
+    @NotNull(message = "fechaInicioVigencia" + CANNOT_BE_NULL_OR_EMPTY)
     private LocalDateTime inicioVigencia;
 
-    //@Nullable
+    @Nullable
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GTM-6")
     private LocalDateTime finVigencia;
 
