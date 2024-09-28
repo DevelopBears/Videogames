@@ -15,4 +15,7 @@ public interface PrecioService {
     public List<Precio> encontrarPreciosActivos();
     public Optional<Precio> encontrarPrecioActivoParaVideojuego(int idVideojuego);
     public int guardarListaDePrecios (List<Precio> lista) throws InvalidParameterException;
+    public List<Precio> encontrarPreciosEnConflicto (int idVideojuego, LocalDateTime inicioVigencia,
+                                                     LocalDateTime finVigencia);
+
 }

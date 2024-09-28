@@ -3,19 +3,21 @@ package org.grizzielicious.VideoGames.controllers;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.grizzielicious.VideoGames.bo.MassUploadBO;
 import org.grizzielicious.VideoGames.bo.PrecioBO;
+import org.grizzielicious.VideoGames.dtos.MassUploadProcessingResponse;
+import org.grizzielicious.VideoGames.dtos.MassUploadResponse;
 import org.grizzielicious.VideoGames.dtos.PrecioDto;
-import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
-import org.grizzielicious.VideoGames.exceptions.PrecioAlreadyExistsException;
-import org.grizzielicious.VideoGames.exceptions.PrecioNotFoundException;
-import org.grizzielicious.VideoGames.exceptions.VideojuegoNotFoundException;
+import org.grizzielicious.VideoGames.exceptions.*;
 import org.grizzielicious.VideoGames.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -27,6 +29,9 @@ public class PrecioController {
 
     @Autowired
     private PrecioBO precioBO;
+
+    @Autowired
+    private MassUploadBO massUploadBO;
 
     @GetMapping("/porId/{id}")
     public ResponseEntity<?> encontrarPrecioPorId (@PathVariable int id) {
@@ -120,11 +125,25 @@ public class PrecioController {
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
             }
         }
-
-
-
         return new ResponseEntity<>(detail, status);
     }
 
+    @GetMapping("/clonarPrecio")
+    public ResponseEntity<?> clonarPrecio (@RequestParam int idPrecio, @RequestParam int idVideojuego)
+            throws InvalidParameterException, PrecioNotFoundException, VideojuegoNotFoundException,
+            PrecioAlreadyExistsException {
+        log.info("Comienza el proceso de clonar un precio");
+        return ResponseEntity.ok(precioBO.clonaPrecio(idPrecio, idVideojuego));
+    }
 
+    @PostMapping(path = "/cargaMasivaDePrecios", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> cargaMasivaDePrecios(@RequestParam(value = "layout", required = true) MultipartFile layout)
+            throws InvalidFileException {
+        log.info("Comienza el proceso de carga masiva ded precios");
+        MassUploadResponse cargaResponse = massUploadBO.getPreciosFromFile(layout);
+        MassUploadProcessingResponse response = precioBO.procesaCargaMasiva(cargaResponse.getPrecios());
+        response.setRegistrosRechazados(response.getRegistrosRechazados() + cargaResponse.getRegistrosErroneos());
+        log.info("Termina el proceso de craga masiva");
+        return ResponseEntity.ok(response);
+    }
 }

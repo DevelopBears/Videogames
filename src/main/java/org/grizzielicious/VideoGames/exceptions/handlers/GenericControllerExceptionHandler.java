@@ -30,7 +30,9 @@ public class GenericControllerExceptionHandler {
             GeneroNotFoundException.class, GeneroAlreadyExistsException.class,
             PlataformaNotFoundException.class, PlataformaAlreadyExistsException.class,
             EstudioNotFoundException.class, EstudioAlreadyExistsException.class,
-            PrecioNotFoundException.class, PrecioAlreadyExistsException.class
+            PrecioNotFoundException.class, PrecioAlreadyExistsException.class,
+            VideojuegoNotFoundException.class,
+            InvalidFileException.class
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -17,4 +17,9 @@ public class VideojuegoServiceImpl implements VideojuegoService {
     public Optional<Videojuego> encontrarVideojuegoPorNombre(String nombreVideojuego) {
         return repository.findVideojuegoByNombreVideojuego(nombreVideojuego);
     }
+
+    @Override
+    public Optional<Videojuego> encontrarPorId(int idVideojuego) {
+        return repository.findById(idVideojuego);
+    }
 }

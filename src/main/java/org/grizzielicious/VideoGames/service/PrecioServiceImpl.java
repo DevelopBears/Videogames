@@ -1,5 +1,6 @@
 package org.grizzielicious.VideoGames.service;
 
+import jakarta.transaction.Transactional;
 import org.grizzielicious.VideoGames.dao.PrecioDao;
 import org.grizzielicious.VideoGames.entities.Precio;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
@@ -49,11 +50,17 @@ public class PrecioServiceImpl implements PrecioService{
     }
 
     @Override
+    @Transactional
     public int guardarListaDePrecios(List<Precio> lista) throws InvalidParameterException {
         for(Precio p : lista) {
             this.validateDates(p);
         }
         return repository.saveAllAndFlush(lista).size();
+    }
+
+    @Override
+    public List<Precio> encontrarPreciosEnConflicto(int idVideojuego, LocalDateTime inicioVigencia, LocalDateTime finVigencia) {
+        return repository.findConflictingPrices(idVideojuego, inicioVigencia, finVigencia);
     }
 
     private void validateDates(Precio precio) throws InvalidParameterException {
@@ -62,5 +69,9 @@ public class PrecioServiceImpl implements PrecioService{
             throw new InvalidParameterException("La fecha de fin de vigencia no puede ser previa a la de inicio");
         }
     }
+
+
+
+
 
 }

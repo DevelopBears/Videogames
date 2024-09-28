@@ -23,4 +23,10 @@ public interface PrecioDao extends JpaRepository<Precio, Integer> {
     Optional<Precio> findAllByCurrentDate (LocalDateTime fecha, int idVideojuego);
 
     Optional<Precio> findById(int idPrecio);
+
+    @Query(value = "SELECT p.* FROM precios p " +
+            "WHERE p.id_videojuego = :idVideojuego " +
+            "AND (fecha_fin_vigencia IS NULL OR fecha_fin_vigencia >= :inicioVigencia) " +
+            "AND (:finVigencia IS NULL || p.fecha_inicio_vigencia < :finVigencia)", nativeQuery = true)
+    List<Precio> findConflictingPrices(int idVideojuego, LocalDateTime inicioVigencia, LocalDateTime finVigencia);
 }
