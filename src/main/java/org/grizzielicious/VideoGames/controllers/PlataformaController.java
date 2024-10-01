@@ -2,17 +2,23 @@ package org.grizzielicious.VideoGames.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.grizzielicious.VideoGames.converters.VideojuegoConverter;
+import org.grizzielicious.VideoGames.dtos.VideojuegoPorPlataformaResponseDto;
 import org.grizzielicious.VideoGames.entities.Plataforma;
+import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
 import org.grizzielicious.VideoGames.exceptions.PlataformaAlreadyExistsException;
 import org.grizzielicious.VideoGames.exceptions.PlataformaNotFoundException;
 import org.grizzielicious.VideoGames.service.PlataformaService;
+import org.grizzielicious.VideoGames.service.VideojuegoService;
 import org.grizzielicious.VideoGames.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -22,6 +28,12 @@ public class PlataformaController {
 
     @Autowired
     private PlataformaService service;
+
+    @Autowired
+    private VideojuegoService videojuegoService;
+
+    @Autowired
+    private VideojuegoConverter converter;
 
     @GetMapping("/todas")
     public ResponseEntity<?> todasLasPlataformas() {
@@ -52,6 +64,21 @@ public class PlataformaController {
         log.info("Comienza el proceso de búsqueda de plataformas que estén disponibles epara el videojuego con id {} ",
                 idVideojuego);
         return ResponseEntity.ok(service.encontrarPlataformaPorVideojuego(idVideojuego));
+    }
+
+    @GetMapping("/videojuegosPorPlataforma/{idPlataforma}")
+    public ResponseEntity<?> videojuegosPorPLataforma (@PathVariable int idPlataforma) throws PlataformaNotFoundException {
+        log.info("Comienza el proceso de búsqueda de videojuegos por la plataforma con ID: {}", idPlataforma);
+        Plataforma p = validarPlataformaExistentePorId(idPlataforma);
+        List<Videojuego> result = videojuegoService.encontrarVideojuegosPorPlataforma(idPlataforma);
+        log.info("Se encontraron los siguientes {} resultados", result.size());
+        return ResponseEntity.ok(
+                VideojuegoPorPlataformaResponseDto.builder()
+                        .idPlataforma(p.getIdPlataforma())
+                        .nombrePlataforma(p.getPlataforma())
+                        .videojuegos(converter.convertFromEntityList(result))
+                        .build()
+        );
     }
 
     @PostMapping("/crearPlataforma")
