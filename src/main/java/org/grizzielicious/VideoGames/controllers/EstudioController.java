@@ -27,14 +27,22 @@ public class EstudioController {
     }
 
     @GetMapping("/porNombre")
-    public ResponseEntity<?> obtenerEstudiosPorNombre(@RequestParam String nombreEstudio) {
+    public ResponseEntity<?> obtenerEstudiosPorNombre(@RequestParam String nombreEstudio)
+            throws InvalidParameterException {
         log.info("Comienza el proceso de búsqueda de estudios con el nombre {}", nombreEstudio);
+        if(nombreEstudio.isBlank()) {
+            throw new InvalidParameterException("El parámetro de búsqueda debe de contener por lo menos un caracter");
+        }
         return ResponseEntity.ok(service.encontrarEstudioPorNombre(nombreEstudio).orElse(null));
     }
 
     @GetMapping("/porNombreLike")
-    public ResponseEntity<?> obtenerEstudiosPorNombreLike(@RequestParam String nombreEstudio) {
+    public ResponseEntity<?> obtenerEstudiosPorNombreLike(@RequestParam String nombreEstudio)
+            throws InvalidParameterException {
         log.info("Comienza el proceso de búsqueda de todos los estudios que coincidan con {}", nombreEstudio);
+        if(nombreEstudio.isBlank()) {
+            throw new InvalidParameterException("El parámetro de búsqueda debe de contener por lo menos un caracter");
+        }
         return ResponseEntity.ok(service.encontrarPorNombreLike(nombreEstudio));
     }
 
