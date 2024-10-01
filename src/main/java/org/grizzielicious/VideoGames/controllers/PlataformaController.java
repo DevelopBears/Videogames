@@ -48,14 +48,20 @@ public class PlataformaController {
     }
 
     @GetMapping("/porNombreCompleto")
-    public ResponseEntity<?> porNombreCompleto(@RequestParam String plataforma) {
+    public ResponseEntity<?> porNombreCompleto(@RequestParam String plataforma) throws InvalidParameterException {
         log.info("Comienza la búsqueda por nombre completo de plataforma {}", plataforma);
+        if(plataforma.isBlank()) {
+            throw new InvalidParameterException("El parámetro de búsqueda debe de contener por lo menos un caracter");
+        }
         return ResponseEntity.ok(service.encontrarPlataformaPorNombre(plataforma).orElse(null));
     }
 
     @GetMapping("/porNombreLike")
-    public ResponseEntity<?> porNombreLike(@RequestParam String plataforma) {
+    public ResponseEntity<?> porNombreLike(@RequestParam String plataforma) throws InvalidParameterException {
         log.info("Comienza la búsqueda por plataforma por nombre coincidente con: {}", plataforma);
+        if(plataforma.isBlank()) {
+            throw new InvalidParameterException("El parámetro de búsqueda debe de contener por lo menos un caracter");
+        }
         return ResponseEntity.ok(service.encontrarPlataformaPorNombreLike(plataforma));
     }
 

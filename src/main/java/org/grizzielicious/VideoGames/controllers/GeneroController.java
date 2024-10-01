@@ -53,8 +53,11 @@ public class GeneroController {
     @ApiResponse(responseCode = "200", description = "Consulta completada exitosamente")
     @ApiResponse(responseCode = "500", description = "Hubo un error en la consulta")
     @GetMapping("/porNombre")
-    private ResponseEntity<?> obtenerGeneroPorNombre(@RequestParam String nombre){
+    private ResponseEntity<?> obtenerGeneroPorNombre(@RequestParam String nombre) throws InvalidParameterException {
         log.info("Se listan todos los géneros por nombre");
+        if(nombre.isBlank()) {
+            throw new InvalidParameterException("El parámetro de búsqueda debe de contener por lo menos un caracter");
+        }
         return ResponseEntity.ok(service.encontrarGeneroPorDescripcion(nombre).orElse(null));
     }
 
