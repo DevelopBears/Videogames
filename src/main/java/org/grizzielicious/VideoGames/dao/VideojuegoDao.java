@@ -34,5 +34,11 @@ public interface VideojuegoDao extends JpaRepository<Videojuego, Integer> {
             "WHERE e.id_estudio = :idEstudio", nativeQuery = true)
     List<Videojuego> findVideojuegosByEstudio(int idEstudio);
 
+    @Query(value = "SELECT v.* " +
+            "FROM videojuego v " +
+            "INNER JOIN plataforma_videojuego pv ON pv.id_videojuego = v.id_videojuego " +
+            "WHERE pv.id_plataforma = :idPlataforma", nativeQuery = true)
+    List<Videojuego> findAllRelatedByPlataforma (int idPlataforma);
+
 
 }

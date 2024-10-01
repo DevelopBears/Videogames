@@ -5,6 +5,7 @@ import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,5 +22,10 @@ public class VideojuegoServiceImpl implements VideojuegoService {
     @Override
     public Optional<Videojuego> encontrarPorId(int idVideojuego) {
         return repository.findById(idVideojuego);
+    }
+
+    @Override
+    public List<Videojuego> encontrarVideojuegosPorPlataforma(int idPlataforma) {
+        return repository.findAllRelatedByPlataforma(idPlataforma);
     }
 }
