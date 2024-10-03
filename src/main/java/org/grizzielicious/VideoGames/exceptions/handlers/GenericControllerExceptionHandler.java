@@ -1,9 +1,6 @@
 package org.grizzielicious.VideoGames.exceptions.handlers;
 
-import org.grizzielicious.VideoGames.controllers.EstudioController;
-import org.grizzielicious.VideoGames.controllers.GeneroController;
-import org.grizzielicious.VideoGames.controllers.PlataformaController;
-import org.grizzielicious.VideoGames.controllers.PrecioController;
+import org.grizzielicious.VideoGames.controllers.*;
 import org.grizzielicious.VideoGames.exceptions.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -13,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice(assignableTypes = {GeneroController.class, PlataformaController.class, EstudioController.class,
-        PrecioController.class})
+        PrecioController.class, VideojuegoController.class})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GenericControllerExceptionHandler {
 
@@ -31,7 +28,7 @@ public class GenericControllerExceptionHandler {
             PlataformaNotFoundException.class, PlataformaAlreadyExistsException.class,
             EstudioNotFoundException.class, EstudioAlreadyExistsException.class,
             PrecioNotFoundException.class, PrecioAlreadyExistsException.class,
-            VideojuegoNotFoundException.class,
+            VideojuegoNotFoundException.class, VideojuegoAlreadyExistsException.class,
             InvalidFileException.class
     })
     @ResponseBody

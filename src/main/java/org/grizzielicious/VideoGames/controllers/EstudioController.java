@@ -81,7 +81,7 @@ public class EstudioController {
 
     }
 
-    @PutMapping("/actualizarEstuio/{id}")
+    @PatchMapping("/actualizarEstuio/{id}")
     private ResponseEntity<?> actualizarEstudio(@PathVariable int id, @RequestParam String estudioMod)
             throws InvalidParameterException, EstudioAlreadyExistsException, EstudioNotFoundException {
         log.info("Comienza el proceso de actualización de estudio");
@@ -124,7 +124,7 @@ public class EstudioController {
 
     }
 
-    public void validarInexistenciaDeEstudio (String nombreEstudio) throws EstudioAlreadyExistsException {
+    private void validarInexistenciaDeEstudio (String nombreEstudio) throws EstudioAlreadyExistsException {
         int id = service.encontrarEstudioPorNombre(nombreEstudio)
                 .orElse(Estudio.builder().idEstudio(-1).build()).getIdEstudio();
         if(id > 0) {
@@ -132,7 +132,7 @@ public class EstudioController {
         }
     }
 
-    public Estudio validarExistenciaEstudio (int idEstudio) throws EstudioNotFoundException {
+    private Estudio validarExistenciaEstudio (int idEstudio) throws EstudioNotFoundException {
         return service.encontrarPorId(idEstudio)
                 .orElseThrow(() -> new EstudioNotFoundException("El estudio con ID " + idEstudio + " no se encuentra en la BD"));
     }

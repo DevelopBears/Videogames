@@ -95,7 +95,7 @@ public class PrecioController {
         return new ResponseEntity<>(detail, status);
     }
 
-    @PutMapping("/actualizarPrecio/{idPrecio}")
+    @PatchMapping("/actualizarPrecio/{idPrecio}")
     public ResponseEntity<?> actualizarPrecio (
             @RequestParam(required = false) Boolean setFinVigenciaAsNull,
             @PathVariable int idPrecio,

@@ -76,7 +76,7 @@ public class PlataformaController {
     public ResponseEntity<?> videojuegosPorPLataforma (@PathVariable int idPlataforma) throws PlataformaNotFoundException {
         log.info("Comienza el proceso de búsqueda de videojuegos por la plataforma con ID: {}", idPlataforma);
         Plataforma p = validarPlataformaExistentePorId(idPlataforma);
-        List<Videojuego> result = videojuegoService.encontrarVideojuegosPorPlataforma(idPlataforma);
+        List<Videojuego> result = videojuegoService.encontrarPorIdPlataforma(idPlataforma);
         log.info("Se encontraron los siguientes {} resultados", result.size());
         return ResponseEntity.ok(
                 VideojuegoPorPlataformaResponseDto.builder()
@@ -111,7 +111,7 @@ public class PlataformaController {
         return new ResponseEntity<> (detail, status);
     }
 
-    @PutMapping("/actualizarPlataforma/{id}")
+    @PatchMapping("/actualizarPlataforma/{id}")
     public ResponseEntity<?> actualizarPlataformaPorId (@PathVariable int id, @RequestParam String nombreAActualizar)
             throws PlataformaAlreadyExistsException, PlataformaNotFoundException, InvalidParameterException {
         log.info("Comienza el proceso de actualizar la plataforma con el ID: " + id);

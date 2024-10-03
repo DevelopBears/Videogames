@@ -4,19 +4,21 @@ import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface VideojuegoDao extends JpaRepository<Videojuego, Integer> {
 
-    Optional<Videojuego> findVideojuegoByNombreVideojuego (@Param("nombre") String nombreVideojuego);
+    List<Videojuego> findAllByOrderByNombreVideojuego();
 
     List<Videojuego> findByEsMultijugador (@Param("esMultijugador") boolean esMultijugador);
 
-    List<Videojuego> findVideojuegoByNombreVideojuegoLike(@Param("nombre") String nombreVideojuego);
+    Optional<Videojuego> findVideojuegoByNombreVideojuego (@Param("nombre") String nombreVideojuego);
 
-    List<Videojuego> findAllByOrderByNombreVideojuego();
+    List<Videojuego> findVideojuegoByNombreVideojuegoContains(@Param("nombre") String nombreVideojuego);
 
     @Query(value = "SELECT v.* FROM videojuego v "+
             "INNER JOIN plataforma_videojuego pv ON pv.id_videojuego = v.id_videojuego "+
@@ -31,7 +33,11 @@ public interface VideojuegoDao extends JpaRepository<Videojuego, Integer> {
 
     @Query(value = "SELECT v.* FROM videojuego v " +
             "INNER JOIN estudio e ON e.id_estudio = v.id_estudio " +
-            "WHERE e.id_estudio = :idEstudio", nativeQuery = true)
+            "WHERE e.nombre_estudio = :nombreEstudio", nativeQuery = true)
+    List<Videojuego> findVideojuegosByEstudio(String nombreEstudio);
+
+    @Query(value = "SELECT v.* FROM videojuego v " +
+            "WHERE v.id_estudio = :idEstudio", nativeQuery = true)
     List<Videojuego> findVideojuegosByEstudio(int idEstudio);
 
     @Query(value = "SELECT v.* " +
@@ -40,5 +46,11 @@ public interface VideojuegoDao extends JpaRepository<Videojuego, Integer> {
             "WHERE pv.id_plataforma = :idPlataforma", nativeQuery = true)
     List<Videojuego> findAllRelatedByPlataforma (int idPlataforma);
 
-
+    @Query(value = "SELECT v.* " +
+            "FROM videojuego v " +
+            "INNER JOIN precios p ON p.id_videojuego = v.id_videojuego " +
+            "        AND p.fecha_inicio_vigencia <= CURRENT_DATE " +
+            "        AND (p.fecha_fin_vigencia IS NULL OR p.fecha_fin_vigencia >= CURRENT_DATE) " +
+            "WHERE p.precio_unitario BETWEEN :precioMin AND :precioMax", nativeQuery = true)
+    List<Videojuego> findVideojuegoByPriceRange(float precioMin, float precioMax);
 }
