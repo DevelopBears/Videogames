@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.grizzielicious.VideoGames.constants.ValidationsConstants.PRICE_OUT_OF_RANGE;
 
 @Slf4j
 @Component
@@ -99,7 +98,7 @@ public class PrecioBO {
             precio.setFechaFinVigencia(null);
         }
         this.validarInexistenciaPrecio(precio.getVideojuego().getIdVideojuego(), precio.getFechaInicioVigencia(),
-                precio.getFechaFinVigencia());
+                precio.getFechaFinVigencia(), true);
         service.guardarPrecio(precio);
     }
 
@@ -116,7 +115,7 @@ public class PrecioBO {
                 .videojuego(videojuego)
                 .build();
         validarInexistenciaPrecio(nuevoPrecio.getVideojuego().getIdVideojuego(), nuevoPrecio.getFechaInicioVigencia(),
-                nuevoPrecio.getFechaFinVigencia());
+                nuevoPrecio.getFechaFinVigencia(), false);
         return service.guardarPrecio(nuevoPrecio);
     }
 
@@ -128,7 +127,7 @@ public class PrecioBO {
         for( Precio p : precioList) {
             try{
                 this.validarInexistenciaPrecio(p.getVideojuego().getIdVideojuego(), p.getFechaInicioVigencia(),
-                        p.getFechaFinVigencia());
+                        p.getFechaFinVigencia(), false);
                 aceptados.add(p);
             } catch (PrecioAlreadyExistsException | InvalidParameterException e) {
                 rechazados.add(p);
@@ -156,8 +155,9 @@ public class PrecioBO {
                 .build();
     }
 
-    private void validarInexistenciaPrecio(int idVideojuego, LocalDateTime inicioVigencia, LocalDateTime finVigencia)
-            throws PrecioAlreadyExistsException, InvalidParameterException {
+    private void validarInexistenciaPrecio(int idVideojuego, LocalDateTime inicioVigencia, LocalDateTime finVigencia,
+                                           boolean isUpdate) throws PrecioAlreadyExistsException,
+                                           InvalidParameterException {
         List<Precio> preciosEnConflicto = service.encontrarPreciosEnConflicto(idVideojuego, inicioVigencia, finVigencia);
         if(preciosEnConflicto.isEmpty()) {
             return;
@@ -169,6 +169,9 @@ public class PrecioBO {
                     .collect(Collectors.joining(","));
             throw new PrecioAlreadyExistsException("Existe más de un precio en conflicto para el videojuego <" +
                     idVideojuego + "> con los precios: " + idsEnConflicto);
+        }
+        if(isUpdate) {
+            return;
         }
         Precio anterior = preciosEnConflicto.get(0);
         anterior.setFechaFinVigencia(inicioVigencia.minusSeconds(1));

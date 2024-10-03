@@ -85,7 +85,7 @@ public class GeneroController {
         return new ResponseEntity<>(detail, status);
     }
 
-    @PutMapping("/actualizarGenero/{id}")
+    @PatchMapping("/actualizarGenero/{id}")
     private ResponseEntity<?> actualizarGenero(@PathVariable int id, @RequestParam String newDescripcion)
             throws InvalidParameterException, GeneroAlreadyExistsException, GeneroNotFoundException {
         log.info("Iniciando el proceso de actualización de género");
@@ -129,7 +129,7 @@ public class GeneroController {
 
     }
 
-    public void validarInexistenciaDeGenero(Genero aValidar) throws GeneroAlreadyExistsException {
+    private void validarInexistenciaDeGenero(Genero aValidar) throws GeneroAlreadyExistsException {
         int id = service.encontrarGeneroPorDescripcion(aValidar.getDescripcion())
                 .orElse(Genero.builder().idGenero(-1).build())
                 .getIdGenero();
@@ -138,7 +138,7 @@ public class GeneroController {
         }
     }
 
-    public void validarInexistenciaDeGenero(String descripcion) throws GeneroAlreadyExistsException {
+    private void validarInexistenciaDeGenero(String descripcion) throws GeneroAlreadyExistsException {
         int id = service.encontrarGeneroPorDescripcion(descripcion)
                 .orElse(Genero.builder().idGenero(-1).build())
                 .getIdGenero();
@@ -147,7 +147,7 @@ public class GeneroController {
         }
     }
 
-    public Genero validarExistenciaDeGenero(int idBuscado) throws GeneroNotFoundException {
+    private Genero validarExistenciaDeGenero(int idBuscado) throws GeneroNotFoundException {
         Genero genero = service.encontrarGeneroPorId(idBuscado)
                 .orElse(Genero.builder().idGenero(-1).build());
         if(genero.getIdGenero() < 0) {

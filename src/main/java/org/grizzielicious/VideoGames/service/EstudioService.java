@@ -2,7 +2,6 @@ package org.grizzielicious.VideoGames.service;
 
 import org.grizzielicious.VideoGames.dtos.VideojuegosPorEstudioResponse;
 import org.grizzielicious.VideoGames.entities.Estudio;
-import org.grizzielicious.VideoGames.entities.Videojuego;
 import org.grizzielicious.VideoGames.exceptions.EstudioNotFoundException;
 
 import java.util.List;

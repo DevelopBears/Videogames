@@ -1,8 +1,6 @@
 package org.grizzielicious.VideoGames.dtos;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.grizzielicious.VideoGames.entities.Precio;
 
 import java.util.List;

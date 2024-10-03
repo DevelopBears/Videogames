@@ -2,6 +2,9 @@ package org.grizzielicious.VideoGames.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +13,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+
+import static org.grizzielicious.VideoGames.constants.ValidationsConstants.*;
 
 @Entity
 @Data
@@ -28,9 +33,12 @@ public class Videojuego implements Serializable {
     @Column(name = "id_videojuego")
     private int idVideojuego;
 
+    @NotEmpty(message = "nombreVideojuego" + CANNOT_BE_NULL_OR_EMPTY)
+    @Size(min = 3, max = 50, message = "nombreVideojuego" + LENGTH_NOT_VALID50)
     @Column(name = "nombre_videojuego")
     private String nombreVideojuego;
 
+    @Min(value = 1988, message = YEAR_OUT_OF_RANGE)
     @Column(name = "anio_lanzamiento")
     private int anioLanzamiento;
 
