@@ -3,7 +3,6 @@ package org.grizzielicious.VideoGames.controllers;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.converters.VideojuegoConverter;
-import org.grizzielicious.VideoGames.dtos.VideojuegoDTO;
 import org.grizzielicious.VideoGames.entities.Estudio;
 import org.grizzielicious.VideoGames.entities.Genero;
 import org.grizzielicious.VideoGames.entities.Plataforma;
@@ -21,10 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @RestController
