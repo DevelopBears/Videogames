@@ -5,9 +5,10 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.bo.MassUploadBO;
 import org.grizzielicious.VideoGames.bo.PrecioBO;
-import org.grizzielicious.VideoGames.dtos.MassUploadProcessingResponse;
+import org.grizzielicious.VideoGames.dtos.MassUploadProcecedResponse;
 import org.grizzielicious.VideoGames.dtos.MassUploadResponse;
 import org.grizzielicious.VideoGames.dtos.PrecioDto;
+import org.grizzielicious.VideoGames.entities.Precio;
 import org.grizzielicious.VideoGames.exceptions.*;
 import org.grizzielicious.VideoGames.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,8 +141,8 @@ public class PrecioController {
     public ResponseEntity<?> cargaMasivaDePrecios(@RequestParam(value = "layout", required = true) MultipartFile layout)
             throws InvalidFileException {
         log.info("Comienza el proceso de carga masiva ded precios");
-        MassUploadResponse cargaResponse = massUploadBO.getPreciosFromFile(layout);
-        MassUploadProcessingResponse response = precioBO.procesaCargaMasiva(cargaResponse.getPrecios());
+        MassUploadResponse<Precio> cargaResponse = massUploadBO.getPreciosFromFile(layout);
+        MassUploadProcecedResponse<PrecioDto> response = precioBO.procesaCargaMasiva(cargaResponse.getListaAceptados());
         response.setRegistrosRechazados(response.getRegistrosRechazados() + cargaResponse.getRegistrosErroneos());
         log.info("Termina el proceso de craga masiva");
         return ResponseEntity.ok(response);

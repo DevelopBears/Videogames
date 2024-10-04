@@ -1,9 +1,6 @@
 package org.grizzielicious.VideoGames.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,11 +9,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MassUploadProcessingResponse implements Serializable {
+public class MassUploadProcecedResponse<T> implements Serializable {
     private int registrosAceptados;
     private int registrosRechazados;
     private int registrosGuardados;
     private String message;
-    private List<PrecioDto> aceptados;
-    private List<PrecioDto> rechazados;
+    private List<T> aceptados;
+    private List<T> rechazados;
 }

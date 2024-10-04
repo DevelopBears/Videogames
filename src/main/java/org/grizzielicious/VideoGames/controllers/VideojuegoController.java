@@ -2,7 +2,10 @@ package org.grizzielicious.VideoGames.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.grizzielicious.VideoGames.bo.MassUploadBO;
 import org.grizzielicious.VideoGames.converters.VideojuegoConverter;
+import org.grizzielicious.VideoGames.dtos.MassUploadProcecedResponse;
+import org.grizzielicious.VideoGames.dtos.MassUploadResponse;
 import org.grizzielicious.VideoGames.entities.Estudio;
 import org.grizzielicious.VideoGames.entities.Genero;
 import org.grizzielicious.VideoGames.entities.Plataforma;
@@ -16,10 +19,13 @@ import org.grizzielicious.VideoGames.utils.ErrorUtils;
 import org.grizzielicious.VideoGames.utils.VideojuegoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +39,9 @@ public class VideojuegoController {
 
     @Autowired
     private VideojuegoConverter converter;
+
+    @Autowired
+    private MassUploadBO massUploadBO;
 
     @Autowired
     private PlataformaService plataformaService;
@@ -284,7 +293,54 @@ public class VideojuegoController {
                         + ">"));
     }
 
-
-
-
+    @PostMapping(path = "/cargaMasivaDeVideojuegos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> cargaMasivaDeVideojuegos(@RequestParam(value = "layout", required = true)
+                                                          MultipartFile layout) throws InvalidFileException {
+        log.info("cargaMasiva --START");
+        MassUploadResponse<Videojuego> massUploadResponse = massUploadBO.getVideojuegosFromFile(layout);
+        List<Videojuego> aceptados = new ArrayList<>();
+        List<Videojuego> rechazados = new ArrayList<>();
+        int registrosGuardados = 0;
+        HttpStatus status;
+        String msg;
+        for(Videojuego toUpload : massUploadResponse.getListaAceptados()) {
+            try {
+                validarInexistenciaVideojuego(toUpload.getNombreVideojuego());
+                videojuegoUtils.fixedVideogameReference(toUpload);
+                aceptados.add(toUpload);
+            } catch (Exception e) {
+                log.error("Videojuego rechazado debido a {}", e.getMessage());
+                rechazados.add(toUpload);
+            }
+        }
+        try {
+            registrosGuardados = service.guardarListaVideojuegos(aceptados);
+            if(
+                    registrosGuardados == 0
+                    || registrosGuardados < massUploadResponse.getRegistrosAceptados()
+                    || massUploadResponse.getRegistrosErroneos() != 0
+            ) {
+                msg = "Algunos elementos del layout no se pudieron guardar. Favor de revisar el layout";
+                status = HttpStatus.MULTI_STATUS;
+            } else {
+                msg = "La lista de videojuegos se guardó correctamente en la BD";
+                status = HttpStatus.OK;
+            }
+        } catch (Exception e) {
+            msg = "Ocurrió una excepción al guardar la lista de videojuegos: " + e.getMessage();
+            log.error(e.getMessage(), e);
+            status = HttpStatus.BAD_REQUEST;
+        }
+        log.info("Termina carga masiva. {} registros guardados", registrosGuardados);
+        return new ResponseEntity<>(MassUploadProcecedResponse.<Videojuego>builder()
+                .registrosGuardados(registrosGuardados)
+                .registrosAceptados(aceptados.size())
+                .registrosRechazados(rechazados.size() + massUploadResponse.getRegistrosErroneos())
+                .aceptados(aceptados)
+                .rechazados(rechazados)
+                .message(msg)
+                .build(),
+                status
+        );
+    }
 }

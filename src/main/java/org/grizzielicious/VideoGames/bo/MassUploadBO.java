@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.grizzielicious.VideoGames.dtos.MassUploadResponse;
-import org.grizzielicious.VideoGames.entities.Precio;
-import org.grizzielicious.VideoGames.entities.Videojuego;
+import org.grizzielicious.VideoGames.entities.*;
 import org.grizzielicious.VideoGames.exceptions.InvalidFileException;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
 import org.grizzielicious.VideoGames.exceptions.VideojuegoNotFoundException;
@@ -17,10 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.grizzielicious.VideoGames.constants.ValidationsConstants.PRICE_OUT_OF_RANGE;
 
@@ -31,13 +27,13 @@ public class MassUploadBO implements Serializable {
     @Autowired
     private VideojuegoService videojuegoService;
 
-    public MassUploadResponse getPreciosFromFile(MultipartFile file) throws InvalidFileException {
+    public MassUploadResponse<Precio> getPreciosFromFile(MultipartFile file) throws InvalidFileException {
         List<Precio> precioList = new ArrayList<>();
-        MassUploadResponse response = new MassUploadResponse();
+        MassUploadResponse<Precio> response = new MassUploadResponse<>();
         Precio tmp;
         try{
             this.validateFileType(file);
-            log.info("Comenzando análisis de archivo{}", file.getOriginalFilename());
+            log.info("Comenzando análisis de archivo de precios {}", file.getOriginalFilename());
             InputStream fis = file.getInputStream();
             Workbook libro = new XSSFWorkbook(fis);
             Sheet hoja = libro.getSheetAt(0);
@@ -94,7 +90,7 @@ public class MassUploadBO implements Serializable {
             log.info("Procesamiento de archivo terminado. Se procesaron correctamente {} registros y fallaron {}",
                     response.getRegistrosAceptados(),response.getRegistrosErroneos());
             libro.close();
-            response.setPrecios(precioList);
+            response.setListaAceptados(precioList);
             return response;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -103,6 +99,108 @@ public class MassUploadBO implements Serializable {
             log.error(e.getMessage());
             throw e;
         }
+    }
+
+    public MassUploadResponse<Videojuego> getVideojuegosFromFile(MultipartFile file) throws InvalidFileException {
+        MassUploadResponse<Videojuego> response = new MassUploadResponse<>();
+        List<Videojuego> videojuegoList = new ArrayList<>();
+        Videojuego tmp;
+        List<Plataforma> plataformasTmp;
+        try {
+            this.validateFileType(file);
+            log.info("Comenzando análisis de archivo de videojuegos: {}", file.getOriginalFilename());
+            InputStream fis = file.getInputStream();
+            Workbook libro = new XSSFWorkbook(fis);
+            Sheet hoja = libro.getSheetAt(0);
+            Cell celda;
+            Map<Integer, String> nombresPlataforma = getPlatformNames(hoja.getRow(0));
+            log.info("Plataformas obtenidas: {}", nombresPlataforma );
+            log.info("Total de videojuegos detectados: {}", hoja.getLastRowNum()-1);
+            for( Row fila : hoja ) {
+                if(fila.getRowNum() == 0 || this.checkIfRowIsEmpty(fila)) {
+                    continue;
+                }
+                try {
+                    Iterator<Cell> cellIterator = fila.cellIterator();
+                    tmp = new Videojuego();
+                    plataformasTmp = new ArrayList<>();
+                    while(cellIterator.hasNext()) {
+                        celda = cellIterator.next();
+                        switch(celda.getColumnIndex()) {
+                            case 0://videojuego
+                                tmp.setNombreVideojuego( celda.getStringCellValue() );
+                                break;
+                            case 1://año lanzamiento
+                                tmp.setAnioLanzamiento((int) celda.getNumericCellValue());
+                                break;
+                            case 2://Multijugador
+                                tmp.setEsMultijugador( celda.getStringCellValue().equalsIgnoreCase("Si") );
+                                break;
+                            case 3:
+                                tmp.setEstudioDesarrollador(
+                                        Estudio.builder()
+                                                .estudio(celda.getStringCellValue() )
+                                                .build()
+                                );
+                                break;
+                            case 4:
+                                tmp.setGenero(
+                                        Genero.builder()
+                                                .descripcion( celda.getStringCellValue() )
+                                                .build()
+                                );
+                                break;
+                            default:
+                                if(celda.getStringCellValue().equalsIgnoreCase("si")) {
+                                    plataformasTmp.add(
+                                            Plataforma.builder()
+                                                    .plataforma( nombresPlataforma.get(celda.getColumnIndex()) )
+                                                    .build()
+                                    );
+                                }
+                        }
+                    }
+                    if(plataformasTmp.isEmpty()) {
+                        throw new InvalidParameterException("El videojuego <" + tmp.getNombreVideojuego()
+                                + "> no tiene asignada ninguna plataforma. Saltando registro");
+                    }
+                    tmp.setPlataformas(plataformasTmp);
+                    videojuegoList.add(tmp);
+                    response.aumentaRegistrosAceptados();
+                } catch (Exception e) {
+                    response.aumentaRegistrosErroneos();
+                    log.error("Excepción capturada al procesar fila {}. Ignorando registro. Mensaje original: {}",
+                            fila.getRowNum(), e.getMessage());
+                }
+            }
+            log.info("Procesamiento de layout terminado. Se procesaron correctamente {} registros y fallaron {}",
+                    response.getRegistrosAceptados(), response.getRegistrosErroneos());
+            libro.close();
+            response.setListaAceptados(videojuegoList);
+            return response;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new InvalidFileException("Excepción capturada al abrir archivo. Mensaje original: " + e.getMessage());
+        } catch (InvalidFileException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+    }
+
+    private Map<Integer, String> getPlatformNames(Row row) throws InvalidFileException {
+        Map<Integer, String> platforms = new HashMap<>();
+        if(Objects.isNull(row) || row.getLastCellNum() <= 0) {
+            throw new InvalidFileException("El layout no tiene los encabezados requeridos");
+        }
+        Cell cell;
+        for(int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
+            cell = row.getCell(cellNum);
+            if(cell.getColumnIndex() < 5) {//NombreVideojuego -> 0 ----> Género -> 4
+                continue;
+            }
+            platforms.put(cellNum, cell.getStringCellValue());
+        }
+        return platforms;
     }
 
     private boolean checkIfRowIsEmpty (Row row) {
