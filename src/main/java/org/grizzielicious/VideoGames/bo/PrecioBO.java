@@ -136,7 +136,13 @@ public class PrecioBO {
         }
         try {
             registrosGuardados = service.guardarListaDePrecios(aceptados);
-            message = "La lista de precio se guardó correctamente en el BD";
+            if(registrosGuardados == 0) {
+                message = "Todos los registros del layout fueron rechazados al fallar en las validaciones";
+            } else if (!rechazados.isEmpty() || registrosGuardados < aceptados.size()) {
+                message = "Algunos registros del layout fueron rechazados";
+            } else {
+                message = "La lista de precio se guardó correctamente en el BD";
+            }
         } catch (Exception e) {
             message = "Ocurrió una excepción al guardar la lista de precios: " + e.getMessage();
             if(e instanceof InvalidParameterException) {
