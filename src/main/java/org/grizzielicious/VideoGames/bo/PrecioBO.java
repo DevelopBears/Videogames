@@ -3,7 +3,7 @@ package org.grizzielicious.VideoGames.bo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.converters.PrecioConverter;
-import org.grizzielicious.VideoGames.dtos.MassUploadProcessingResponse;
+import org.grizzielicious.VideoGames.dtos.MassUploadProcecedResponse;
 import org.grizzielicious.VideoGames.dtos.PrecioDto;
 import org.grizzielicious.VideoGames.entities.Precio;
 import org.grizzielicious.VideoGames.entities.Videojuego;
@@ -119,7 +119,7 @@ public class PrecioBO {
         return service.guardarPrecio(nuevoPrecio);
     }
 
-    public MassUploadProcessingResponse procesaCargaMasiva(List<Precio> precioList) {
+    public MassUploadProcecedResponse<PrecioDto> procesaCargaMasiva(List<Precio> precioList) {
         List<Precio> aceptados = new ArrayList<>();
         List<Precio> rechazados = new ArrayList<>();
         int registrosGuardados = 0;
@@ -145,7 +145,8 @@ public class PrecioBO {
                 log.error(e.getMessage(), e);
             }
         }
-        return MassUploadProcessingResponse.builder()
+
+        return MassUploadProcecedResponse.<PrecioDto>builder()
                 .registrosAceptados(aceptados.size())
                 .registrosRechazados(rechazados.size())
                 .registrosGuardados(registrosGuardados)
