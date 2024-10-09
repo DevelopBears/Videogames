@@ -4,14 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.grizzielicious.VideoGames.dtos.PrecioDto;
 import org.grizzielicious.VideoGames.entities.Precio;
 import org.grizzielicious.VideoGames.entities.Videojuego;
-import org.grizzielicious.VideoGames.exceptions.NotImplementedException;
 import org.grizzielicious.VideoGames.exceptions.VideojuegoNotFoundException;
 import org.grizzielicious.VideoGames.service.VideojuegoService;
+import org.grizzielicious.VideoGames.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -25,10 +22,18 @@ public class PrecioConverter implements iConverter<PrecioDto, Precio> {
 
     @Override
     public Precio convertFromDto(PrecioDto dto) throws VideojuegoNotFoundException {
-        Videojuego videojuego = videojuegoService
-                .encontrarVideojuegoPorNombre(dto.getNombreVideojuego())
-                .orElseThrow(() -> new VideojuegoNotFoundException("No existe ningún videojuego con el nombre: "
-                        +  dto.getNombreVideojuego()));
+        Videojuego videojuego;
+        if(CommonUtils.isIntegerParseable(dto.getNombreOIdVideojuego())) {
+            videojuego = videojuegoService
+                    .encontrarPorId(Integer.parseInt( dto.getNombreOIdVideojuego() ))
+                    .orElseThrow(() -> new VideojuegoNotFoundException("No existe ningún videojuego con el Id: "
+                            +  dto.getNombreOIdVideojuego()));
+        } else {
+            videojuego = videojuegoService
+                    .encontrarVideojuegoPorNombre(dto.getNombreOIdVideojuego())
+                    .orElseThrow(() -> new VideojuegoNotFoundException("No existe ningún videojuego con el Nombre: "
+                            +  dto.getNombreOIdVideojuego()));
+        }
         return Precio.builder()
                 .precioUnitario(dto.getPrecioUnitario())
                 .fechaInicioVigencia(dto.getInicioVigencia())
@@ -47,7 +52,4 @@ public class PrecioConverter implements iConverter<PrecioDto, Precio> {
                 .finVigencia(entity.getFechaFinVigencia())
                 .build();
     }
-
-
-
 }

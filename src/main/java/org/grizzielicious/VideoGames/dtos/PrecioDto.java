@@ -44,6 +44,6 @@ public class PrecioDto implements Serializable {
     private LocalDateTime finVigencia;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String nombreVideojuego;
+    private String nombreOIdVideojuego;
 
 }

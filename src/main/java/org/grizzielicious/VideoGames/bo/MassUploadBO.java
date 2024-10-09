@@ -9,6 +9,7 @@ import org.grizzielicious.VideoGames.exceptions.InvalidFileException;
 import org.grizzielicious.VideoGames.exceptions.InvalidParameterException;
 import org.grizzielicious.VideoGames.exceptions.VideojuegoNotFoundException;
 import org.grizzielicious.VideoGames.service.VideojuegoService;
+import org.grizzielicious.VideoGames.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,11 +52,19 @@ public class MassUploadBO implements Serializable {
                     while(cellIterator.hasNext()) {
                         celda = cellIterator.next();
                         switch (celda.getColumnIndex()) {
-                            case 0://nombreVideojuego
-                                String nombreVideojuego = celda.getStringCellValue();
-                                videojuegoTmp = videojuegoService.encontrarVideojuegoPorNombre(nombreVideojuego)
-                                        .orElseThrow(() -> new VideojuegoNotFoundException("No hay ningún videojuego " +
-                                                "coincidente con <" + nombreVideojuego + ">"));
+                            case 0://nombre o id de Videojuego
+                                String nombreOIdVideojuego = celda.getStringCellValue();
+                                if(CommonUtils.isIntegerParseable(nombreOIdVideojuego)) {
+                                    videojuegoTmp = videojuegoService
+                                            .encontrarPorId(Integer.parseInt(nombreOIdVideojuego))
+                                            .orElseThrow(() -> new VideojuegoNotFoundException("No existe el " +
+                                                    "videojuego con Id <" + nombreOIdVideojuego + ">"));
+                                } else {
+                                    videojuegoTmp = videojuegoService
+                                            .encontrarVideojuegoPorNombre(nombreOIdVideojuego)
+                                            .orElseThrow(() -> new VideojuegoNotFoundException("No existe el " +
+                                                    "videojuego con nombre <" + nombreOIdVideojuego + ">"));
+                                }
                                 tmp.setVideojuego(videojuegoTmp);
                                 break;
                             case 1:
