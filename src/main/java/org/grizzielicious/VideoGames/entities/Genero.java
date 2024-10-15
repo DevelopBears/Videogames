@@ -40,6 +40,7 @@ public class Genero implements Serializable {
 
     @Column(name = "is_active")
     @JsonIgnore
+    @Builder.Default
     private boolean estaActivo = true;
 
 }
